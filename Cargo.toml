@@ -1,0 +1,12 @@
+[package]
+name = "tfhe-nand-poc"
+version = "0.1.0"
+edition = "2021"
+description = "Minimal PoC of homomorphic NAND using the TFHE-rs library"
+license = "MIT"
+
+[dependencies]
+tfhe = { version = "1.4", features = ["boolean"] }
+
+[profile.release]
+lto = "fat"
