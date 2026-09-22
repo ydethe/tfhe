@@ -1,5 +1,5 @@
 use tfhe::prelude::*;
-use tfhe::{generate_keys, set_server_key, ConfigBuilder, FheUint8, FheUint32};
+use tfhe::{generate_keys, set_server_key, ConfigBuilder, FheUint32, FheUint64};
 
 fn main() {
     // Key generation (client side).
@@ -11,12 +11,12 @@ fn main() {
     set_server_key(server_key);
 
     // --- 8-bit arithmetic (values 0..=255) --------------------------------
-    let clear_a: u8 = 37;
-    let clear_b: u8 = 5;
+    let clear_a: u64 = 37;
+    let clear_b: u64 = 5;
 
     // Encrypt — client side only.
-    let a = FheUint8::encrypt(clear_a, &client_key);
-    let b = FheUint8::encrypt(clear_b, &client_key);
+    let a = FheUint64::encrypt(clear_a, &client_key);
+    let b = FheUint64::encrypt(clear_b, &client_key);
 
     println!("  Size of clear a: {} bytes", std::mem::size_of_val(&clear_a));
     println!("  Size of encrypted a: {} bytes", std::mem::size_of_val(&a));
@@ -30,17 +30,17 @@ fn main() {
     println!("  Size of encrypted sum: {} bytes", std::mem::size_of_val(&sum));
 
     // Decrypt — client side only.
-    let sum_dec: u8 = sum.decrypt(&client_key);
-    let diff_dec: u8 = diff.decrypt(&client_key);
-    let prod_dec: u8 = prod.decrypt(&client_key);
-    let and_dec: u8 = anded.decrypt(&client_key);
+    let sum_dec: u64 = sum.decrypt(&client_key);
+    let diff_dec: u64 = diff.decrypt(&client_key);
+    let prod_dec: u64 = prod.decrypt(&client_key);
+    let and_dec: u64 = anded.decrypt(&client_key);
 
     assert_eq!(sum_dec, clear_a.wrapping_add(clear_b));
     assert_eq!(diff_dec, clear_a.wrapping_sub(clear_b));
     assert_eq!(prod_dec, clear_a.wrapping_mul(clear_b));
     assert_eq!(and_dec, clear_a & clear_b);
 
-    println!("FheUint8 arithmetic on encrypted data:");
+    println!("FheUint64 arithmetic on encrypted data:");
     println!("  {clear_a} + {clear_b} = {sum_dec}");
     println!("  {clear_a} - {clear_b} = {diff_dec}");
     println!("  {clear_a} * {clear_b} = {prod_dec}");
@@ -51,7 +51,7 @@ fn main() {
     let is_greater_dec: bool = is_greater.decrypt(&client_key);
     assert_eq!(is_greater_dec, clear_a > clear_b);
     println!("  {clear_a} > {clear_b} = {is_greater_dec}");
-
+     
     // --- 32-bit arithmetic, mixing ciphertext with a clear scalar ---------
     let clear_x: u32 = 1_000_000;
     let x = FheUint32::encrypt(clear_x, &client_key);
