@@ -6,7 +6,9 @@ description = "Minimal PoC of homomorphic NAND using the TFHE-rs library"
 license = "MIT"
 
 [dependencies]
-tfhe = { version = "1.4", features = ["boolean"] }
+tfhe = { version = "1.4", features = ["integer"] }
 
 [profile.release]
-lto = "fat"
+codegen-units = 1
+lto = false
+opt-level = 1        # instead of default 3
